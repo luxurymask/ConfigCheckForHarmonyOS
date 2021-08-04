@@ -1,6 +1,7 @@
 import os
 import zipfile
 import sys
+import json
 
 def get_config_file(file_path):
 	unzip_file(file_path)
@@ -9,7 +10,12 @@ def get_config_file(file_path):
 		for file in files:
 			if file.endswith(".hap"):
 				unzip_file(os.path.join(root,file))
-
+				config_file_path = os.path.join(os.path.join(root, file) + "_files", "config.json")
+				print(config_file_path)
+				load_dict = {}
+				with open(config_file_path, "r") as load_config_file:
+					load_dict = json.load(load_config_file)
+				
 
 def unzip_file(file_path):
 	zip_file = zipfile.ZipFile(file_path)
