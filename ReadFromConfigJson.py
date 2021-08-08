@@ -17,8 +17,9 @@ def get_config_file(file_path):
 				load_dict = {}
 				with open(config_file_path, "r") as load_config_file:
 					load_dict = json.load(load_config_file)
-				config_dictionary["hap_name"] = file
-				config_dictionary["load_dict"] = load_dict
+				config_dictionary[file] = load_dict
+				print(config_dictionary)
+
 
 def unzip_file(file_path):
 	zip_file = zipfile.ZipFile(file_path)
