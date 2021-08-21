@@ -23,21 +23,18 @@ def get_config_file(file_path):
 			elif file.endswith(".res"):
 				unzip_file(os.path.join(root,file))
 				entrycard_path = os.path.join(os.path.join(root, file) + "_files", "EntryCard")
-				print("111" + entrycard_path)
 				for snap_folder_name in os.listdir(entrycard_path):
-					print(snap_folder_name)
 					config_dictionary["EntryCard-" + snap_folder_name] = {}
 					for snap_root, snap_dirs, snap_files in os.walk(os.path.join(entrycard_path, snap_folder_name)):
 						for snap_file in snap_files:
-							print(os.path.join(snap_root, snap_file))
 							config_dictionary["EntryCard-" + snap_folder_name][snap_file] = os.path.join(snap_root, snap_file)
 
-	# print(config_dictionary)
 	show_data_in_pyecharts(config_dictionary)
 
 def show_data_in_pyecharts(config_dictionary):
 	page = Page()
-	pth = os.path.join(os.path.split(os.path.realpath(__file__))[0],"zsdflkasj_page.html")
+	img_pth = os.path.join(os.path.split(os.path.realpath(__file__))[0],"app_image.html")
+	table_pth = os.path.join(os.path.split(os.path.realpath(__file__))[0],"app_table.html")
 	app_apiversion_compatible = None
 
 	app_table = Table()
@@ -54,15 +51,15 @@ def show_data_in_pyecharts(config_dictionary):
 	for key in config_dictionary:
 		module_ability_icon = ""
 		module_ability_form_name = ""
+		module_distro_modulename = ""
 
 		if key.startswith("EntryCard-"):
-			pth = os.path.join(os.path.split(os.path.realpath(__file__))[0],"app_image.html")
 			snapshot_imgs = config_dictionary[key]
 			for snapshot_img in snapshot_imgs:
+				print(snapshot_img)
+				print(module_ability_form_name)
 				if snapshot_img.startswith(module_ability_form_name):
-					print("#####" + snapshot_img + module_ability_form_name)
 					img_path = snapshot_imgs[snapshot_img];
-					print(key + ": " + img_path)
 					image = Image()
 					img_src = (img_path)
 					image.add(
@@ -73,9 +70,8 @@ def show_data_in_pyecharts(config_dictionary):
     					title_opts=ComponentTitleOpts(title=key, subtitle=img_path)
 					)
 					# page.add(image)
-					image.render(pth)
+					image.render(img_pth)
 		else:
-			pth = os.path.join(os.path.split(os.path.realpath(__file__))[0],"app_table.html")
 			hap_name = key
 			hap_config_json = config_dictionary[hap_name]
 
@@ -107,14 +103,9 @@ def show_data_in_pyecharts(config_dictionary):
 					table_subtitle.append("app info not compatible: app_vendor-" + hap_config_json['app']['vendor'] + "\n")
 				if app_bundlename != hap_config_json['app']['bundleName']:
 					table_subtitle.append("app info not compatible: app_bundlename-" + hap_config_json['app']['bundleName'] + "\n")
-			# print(app_apiversion_compatible)
-			# print(app_apiversion_target)
-			# print(app_version_code)
-			# print(app_version_name)
-			# print(app_vendor)
-			# print(app_bundlename)
 	
 			module_mainability = hap_config_json['module']['mainAbility'] if 'mainAbility' in hap_config_json['module'] else ""
+			module_distro_modulename = hap_config_json['module']['distro']['moduleName']
 			module_distro_moduletype = hap_config_json['module']['distro']['moduleType']
 			module_package = hap_config_json['module']['package']
 
@@ -127,8 +118,8 @@ def show_data_in_pyecharts(config_dictionary):
 					module_ability_icon = module_ability['icon']
 					module_ability_forms = module_ability['forms']
 					for module_ability_form in module_ability_forms:
-						module_ability_form_isdefault = module_ability_form['isDefault'] if 'isDefault' in module_ability_form else ""
-						if module_ability_form_isdefault == "":
+						module_ability_form_isdefault = module_ability_form['isDefault'] if 'isDefault' in module_ability_form else False
+						if module_ability_form_isdefault == False:
 							continue
 						module_ability_form_name = module_ability_form['name']
 						module_ability_form_defaultdemension = module_ability_form['defaultDimension']
@@ -137,7 +128,7 @@ def show_data_in_pyecharts(config_dictionary):
 						current_row.append(module_ability_form_isdefault)
 						current_row.append(module_ability_form_defaultdemension)
 						current_row.append(module_ability_form_description)
-			if len(current_row) != len(module_table_headers):
+			if len(current_row) < len(module_table_headers):
 				current_row.append("")
 				current_row.append("")
 				current_row.append("")
@@ -149,9 +140,7 @@ def show_data_in_pyecharts(config_dictionary):
     			title_opts=ComponentTitleOpts(title="hap基础信息", subtitle="")
 			)
 	page.add(module_table)
-	# app_table.render(pth)
-	page.render(pth)
-
+	page.render(table_pth)
 
 def unzip_file(file_path):
 	zip_file = zipfile.ZipFile(file_path)
