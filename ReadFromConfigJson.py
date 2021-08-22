@@ -104,7 +104,7 @@ def show_data_in_pyecharts(config_dictionary):
 						style_opts={"width": "48px", "height": "48px", "style": "margin-top: 20px; padding: 5px; background-color:black"}
 					)
 					icon_image.set_global_opts(
-    					title_opts=ComponentTitleOpts(title="Media-" + key_module_name, subtitle=icon_img_src)
+    					title_opts=ComponentTitleOpts(title="Icon-" + key_module_name, subtitle=icon_img_src)
 					)
 					img_page.add(icon_image)
 
