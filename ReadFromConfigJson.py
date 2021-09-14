@@ -9,6 +9,36 @@ from pyecharts.charts import Page
 
 module_icon_dict = {}
 
+
+def encode(s):
+    return ' '.join([bin(ord(c)).replace('0b', '') for c in s])
+  
+def decode(s):
+    return ''.join([chr(i) for i in [int(b, 2) for b in s.split(' ')]])
+
+def is_png(file_path):
+	f = open(file_path,"rb+")
+	data = f.read(4)
+	f.close()
+
+	prefix = str(data)[6:-1]
+	if prefix == 'PNG':
+		return True
+	else:
+		return False
+
+def size_format(size):
+    if size < 1000:
+        return '%i' % size + 'size'
+    elif 1000 <= size < 1000000:
+        return '%.1f' % float(size/1000) + 'KB'
+    elif 1000000 <= size < 1000000000:
+        return '%.1f' % float(size/1000000) + 'MB'
+    elif 1000000000 <= size < 1000000000000:
+        return '%.1f' % float(size/1000000000) + 'GB'
+    elif 1000000000000 <= size:
+        return '%.1f' % float(size/1000000000000) + 'TB'
+
 def get_config_file(file_path):
 	unzip_file(file_path)
 	config_dictionary = {}
@@ -76,12 +106,14 @@ def show_data_in_pyecharts(config_dictionary):
 					img_path = snapshot_imgs[snapshot_img];
 					image = Image()
 					img_src = (img_path)
+					is_png_str =  "是PNG无误" if is_png(img_src) else "是个假PNG"
+					print(is_png_str)
 					image.add(
 						src = img_src,
 						style_opts={"width": "600px", "height": "600px", "style": "margin-top: 20px; padding: 5px; background-color:black"}
 					)
 					image.set_global_opts(
-    					title_opts=ComponentTitleOpts(title=key, subtitle=img_path)
+    					title_opts=ComponentTitleOpts(title=key, subtitle=img_path + "\n" + size_format(os.path.getsize(img_path)) + " " + is_png_str)
 					)
 					img_page.add(image)
 					# page.add(image)
